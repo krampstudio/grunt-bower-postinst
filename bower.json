@@ -1,0 +1,8 @@
+{
+  "name": "grunt-bower-postinst",
+  "version": "0.0.0",
+  "dependencies": {
+    "bootstrap": "~2.3.2",
+    "jquery.ui": "~1.10.3"
+  }
+}
