@@ -13,15 +13,22 @@ module.exports = function(grunt) {
   // Please see the Grunt documentation for more information regarding task
   // creation: http://gruntjs.com/creating-tasks
 
-  grunt.registerMultiTask('bower_postinst', 'Your task description goes here.', function() {
-    // Merge task-specific and/or target-specific options with these defaults.
+  grunt.registerMultiTask('bower_postinst', 'Post Installation Tasks for Bower Components.', function() {
+      
+    var bower = require('bower');
+
     var options = this.options({
-      punctuation: '.',
-      separator: ', '
+        directory : bower.config.directory,
+        components : []
     });
+    
+    
+    
+    /*
 
     // Iterate over all specified file groups.
     this.files.forEach(function(f) {
+        
       // Concat specified files.
       var src = f.src.filter(function(filepath) {
         // Warn on and remove invalid source files (if nonull was set).
@@ -44,7 +51,7 @@ module.exports = function(grunt) {
 
       // Print a success message.
       grunt.log.writeln('File "' + f.dest + '" created.');
-    });
+    });*/
   });
 
 };
