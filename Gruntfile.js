@@ -27,10 +27,10 @@ module.exports = function(grunt) {
     bower_postinst: {
       dist: {
         options: {
-            components : [
-                'jquery.ui',
-                'bootstrap'
-            ]
+            components : {
+                'jquery.ui' : ['npm', {'grunt' : 'build'}],
+                'bootstrap' : ['npm', {'make': []} ]
+            }
         }
       }
     },
