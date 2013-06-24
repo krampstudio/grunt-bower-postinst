@@ -17,6 +17,7 @@ module.exports = function(grunt) {
         var util = require('util');
         var isWin = process.platform === 'win32';
         var task = grunt.task.current;
+        var done = task.async();
         var _ = grunt.util._;
         
         var options = task.options({
@@ -30,6 +31,30 @@ module.exports = function(grunt) {
                 },
                 components : []
             });
+            
+        /**
+         * Format cli args : manage spaces in paths
+         * @param {Array} args - the arguments
+         * @returns {Array} the formatted arguments
+         */
+        var unspaceArgs = function(args) {
+            if (isWin) {
+                args = args.map(function(item) {
+                    if (item.indexOf(' ') >= 0) {
+                        return '"' + item + '"';
+                    }
+                    else {
+                        return item;
+                    }
+                });
+            } else {
+                // Unix: escape spaces in paths
+                args = args.map(function(item) {
+                    return item.replace(' ', '\\ ');
+                });
+            }
+            return args;
+        }
         
         Object.keys(options.components).forEach(function(component){
             var compDir =  options.directory + "/" + component,
@@ -38,11 +63,11 @@ module.exports = function(grunt) {
     
                 //discover available actions
                 var detect = {
-                    'git submodule'  : grunt.file.exists(compDir + "/.gitmodules"),
-                    'npm'     : grunt.file.exists(compDir + "/package.json"),
-                    'grunt'   : grunt.file.exists(compDir + "/Gruntfile.js"),
-                    'jake'    : grunt.file.exists(compDir + "/Jakefile"),
-                    'make'    : grunt.file.exists(compDir + "/Makefile")
+                    'git submodule'     : grunt.file.exists(compDir + "/.gitmodules"),
+                    'npm'               : grunt.file.exists(compDir + "/package.json"),
+                    'grunt'             : grunt.file.exists(compDir + "/Gruntfile.js"),
+                    'jake'              : grunt.file.exists(compDir + "/Jakefile"),
+                    'make'              : grunt.file.exists(compDir + "/Makefile")
                 };
                 
                 grunt.log.debug("Entering " + compDir  + " -> " + util.inspect(detect));
@@ -64,17 +89,47 @@ module.exports = function(grunt) {
                     }
                 });
                 
-                
-                stack.forEach(function(action){
-                    if(action.length > 0){
-                        var cmd = (isWin) ? 'cmd' : action[0];
-                        var args = (isWin) ? ['/c'].concat(action) : action.slice(1);
-                        
-                        grunt.log.debug(cmd + ' ' + args.join(' '));
+                //transform the stack to an array of spawn function
+                stack = stack.map(function(item){
+                    return function(callback){
+                        if(_.isArray(item) && item.length > 0){
+                            var action = unspaceArgs(item);
+                            var cmd = (isWin) ? 'cmd' : action[0];
+                            var args = (isWin) ? ['/c'].concat(action) : action.slice(1);
+                            
+                            grunt.log.debug('Running on ' + compDir + ' : ' + cmd + ' ' + args.join(' '));
+                            
+                            var child = spawn(cmd, args, {
+                                    windowsVerbatimArguments: isWin,
+                                    cwd : compDir
+                                });
+                            child.stdout.on('data', function(data){
+                                grunt.log.debug(data);
+                            });
+                            child.stderr.on('data', function(data){
+                                grunt.log.debug("stderr" + data);
+                            });
+                            child.on('exit', function(code){
+                                if(code === 0){
+                                    callback(null, action[0] + ' on ' + compDir);
+                                    grunt.log.write('Finnished : ' + action[0] + ' on ' + compDir);
+                                } else {
+                                    callback(new Error("Process exit with code " + code));
+                                } 
+                            });
+                        }
                     }
                 });
                 
-                
+                //run them in parrallel
+                grunt.util.async.series(stack, function(err, result){
+                     if(err){
+                        grunt.fail.warn(err);
+                    } else {
+                        grunt.log.write(result);
+                    }
+                    done(true);
+                })
                 
             } else {
                 grunt.log.warn('Component "' + component + '" not found in ' + compDir );
