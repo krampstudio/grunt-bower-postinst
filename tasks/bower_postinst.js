@@ -19,6 +19,7 @@ module.exports = function(grunt) {
         var task = grunt.task.current;
         var done = task.async();
         var _ = grunt.util._;
+        var stacks = {}; 
         
         var options = task.options({
                 directory : bower.config.directory,
@@ -107,7 +108,7 @@ module.exports = function(grunt) {
                                 grunt.log.debug(data);
                             });
                             child.stderr.on('data', function(data){
-                                grunt.log.debug("stderr" + data);
+                                grunt.log.debug(data);
                             });
                             child.on('exit', function(code){
                                 if(code === 0){
@@ -121,19 +122,34 @@ module.exports = function(grunt) {
                     }
                 });
                 
-                //run them in parrallel
+                stacks[component] = stack;
+                
+            } else {
+                grunt.log.warn('Component "' + component + '" not found in ' + compDir );
+            }
+        });
+        
+        //once the stack is completed, format the stack to run series by component
+        var series = _.values(stacks).map(function(stack){
+            return function(){
                 grunt.util.async.series(stack, function(err, result){
                      if(err){
                         grunt.fail.warn(err);
                     } else {
                         grunt.log.write(result);
                     }
-                    done(true);
-                })
-                
+                });
+            };
+        });
+        
+        //then run all series in parrallel
+        grunt.util.async.parallel(series, function(err, result){
+            if(err){
+                grunt.fail.warn(err);
             } else {
-                grunt.log.warn('Component "' + component + '" not found in ' + compDir );
+                grunt.log.write(result);
             }
+            done(true);
         });
     });
 };
