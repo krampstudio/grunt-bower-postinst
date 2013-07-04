@@ -55,7 +55,7 @@ module.exports = function(grunt) {
                 });
             }
             return args;
-        }
+        };
         
         Object.keys(options.components).forEach(function(component){
             var compDir =  options.directory + "/" + component,
@@ -98,7 +98,7 @@ module.exports = function(grunt) {
                             var cmd = (isWin) ? 'cmd' : action[0];
                             var args = (isWin) ? ['/c'].concat(action) : action.slice(1);
                             
-                            grunt.log.debug('Running on ' + compDir + ' : ' + cmd + ' ' + args.join(' '));
+                            grunt.log.write('Running on ' + compDir + ' : ' + cmd + ' ' + args.join(' ') + '\n');
                             
                             var child = spawn(cmd, args, {
                                     windowsVerbatimArguments: isWin,
@@ -113,13 +113,13 @@ module.exports = function(grunt) {
                             child.on('exit', function(code){
                                 if(code === 0){
                                     callback(null, action[0] + ' on ' + compDir);
-                                    grunt.log.write('Finnished : ' + action[0] + ' on ' + compDir);
+                                    grunt.log.write('Finnished : ' + action[0] + ' on ' + compDir + '\n');
                                 } else {
                                     callback(new Error("Process exit with code " + code));
                                 } 
                             });
                         }
-                    }
+                    };
                 });
                 
                 stacks[component] = stack;
