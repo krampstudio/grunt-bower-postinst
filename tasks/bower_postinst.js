@@ -61,7 +61,10 @@ module.exports = function(grunt) {
             var compDir =  options.directory + "/" + component,
                 actions = options.components[component];
             if(grunt.file.exists(compDir) && grunt.file.isDir(compDir)){
-    
+        
+                //will contains the stack of actions to excute for the component
+                var stack = [];
+                
                 //discover available actions
                 var detect = {
                     'git submodule'     : grunt.file.exists(compDir + "/.gitmodules"),
@@ -73,14 +76,15 @@ module.exports = function(grunt) {
                 
                 grunt.log.debug("Entering " + compDir  + " -> " + util.inspect(detect));
                 
+                
                 //build the postinst commands stack to run, merging the user defined and the default actions
-                var stack = [];
                 actions.forEach(function(action){
                     if(_.isString(action) && _.isArray(options.actions[action])){
                         action = _.object([action], options.actions[action]);
                     }
                     if(_.isPlainObject(action)){
                         Object.keys(action).forEach(function(key){
+                            
                             //check if the config file for the action has been detected
                             if(detect[key] !== undefined && detect[key] === false){
                                 grunt.fail.warn("Asked to run '" + key + "' but no valid configuration is detected in '" + component + "'");
@@ -90,7 +94,7 @@ module.exports = function(grunt) {
                     }
                 });
                 
-                //transform the stack to an array of spawn function
+                //transform the stack to an array of spawnable function
                 stack = stack.map(function(item){
                     return function(callback){
                         if(_.isArray(item) && item.length > 0){
@@ -98,7 +102,7 @@ module.exports = function(grunt) {
                             var cmd = (isWin) ? 'cmd' : action[0];
                             var args = (isWin) ? ['/c'].concat(action) : action.slice(1);
                             
-                            grunt.log.write('Running on ' + compDir + ' : ' + cmd + ' ' + args.join(' ') + '\n');
+                            grunt.log.writeln('Running on ' + compDir + ' : ' + cmd + ' ' + args.join(' '));
                             
                             var child = spawn(cmd, args, {
                                     windowsVerbatimArguments: isWin,
@@ -112,8 +116,7 @@ module.exports = function(grunt) {
                             });
                             child.on('exit', function(code){
                                 if(code === 0){
-                                    callback(null, action[0] + ' on ' + compDir);
-                                    grunt.log.write('Finnished : ' + action[0] + ' on ' + compDir + '\n');
+                                    callback(null, action[0] + ' on ' + compDir+ ' ran successfully');
                                 } else {
                                     callback(new Error("Process exit with code " + code));
                                 } 
@@ -130,24 +133,28 @@ module.exports = function(grunt) {
         });
         
         //once the stack is completed, format the stack to run series by component
-        var series = _.values(stacks).map(function(stack){
+        var series = Object.keys(stacks).map(function(component){
             return function(){
-                grunt.util.async.series(stack, function(err, result){
+                grunt.util.async.series(stacks[component], function(err, result){
                      if(err){
                         grunt.fail.warn(err);
                     } else {
-                        grunt.log.write(result);
+                        if(result && result.length > 0){
+                            grunt.log.ok(component + ' postinst executed ' + result.length + (result.length > 1 ? ' actions' : ' action') + ' successfully');
+                        } else{
+                            grunt.log.warn('No actions executed for ' + component);
+                        }
                     }
                 });
             };
         });
         
         //then run all series in parrallel
-        grunt.util.async.parallel(series, function(err, result){
+        grunt.util.async.parallel(series, function(err){
             if(err){
                 grunt.fail.warn(err);
             } else {
-                grunt.log.write(result);
+                grunt.log.ok('bower posinst finished');
             }
             done(true);
         });
