@@ -57,7 +57,7 @@ module.exports = function(grunt) {
             return args;
         };
         
-        Object.keys(options.components).forEach(function(component){
+        Object.keys(options.components).forEach(function itComp(component){
             var compDir =  options.directory + "/" + component,
                 actions = options.components[component];
             if(grunt.file.exists(compDir) && grunt.file.isDir(compDir)){
@@ -78,12 +78,12 @@ module.exports = function(grunt) {
                 
                 
                 //build the postinst commands stack to run, merging the user defined and the default actions
-                actions.forEach(function(action){
+                actions.forEach(function itActions(action){
                     if(_.isString(action) && _.isArray(options.actions[action])){
                         action = _.object([action], options.actions[action]);
                     }
                     if(_.isPlainObject(action)){
-                        Object.keys(action).forEach(function(key){
+                        Object.keys(action).forEach(function itActionName(key){
                             
                             //check if the config file for the action has been detected
                             if(detect[key] !== undefined && detect[key] === false){
@@ -95,7 +95,7 @@ module.exports = function(grunt) {
                 });
                 
                 //transform the stack to an array of spawnable function
-                stack = stack.map(function(item){
+                stack = stack.map(function spawnableStack(item){
                     return function(callback){
                         if(_.isArray(item) && item.length > 0){
                             var action = unspaceArgs(item);
@@ -133,28 +133,35 @@ module.exports = function(grunt) {
         });
         
         //once the stack is completed, format the stack to run series by component
-        var series = Object.keys(stacks).map(function(component){
-            return function(){
-                grunt.util.async.series(stacks[component], function(err, result){
+        var series = Object.keys(stacks).map(function seriesStack(component){
+            return function(cb){
+                grunt.util.async.series(stacks[component], function serieDone(err, result){
                      if(err){
-                        grunt.fail.warn(err);
+                        cb(err);
                     } else {
-                        if(result && result.length > 0){
-                            grunt.log.ok(component + ' postinst executed ' + result.length + (result.length > 1 ? ' actions' : ' action') + ' successfully');
+                        var executed = (result) ? result.length : 0;
+                        if(executed > 0){
+                            grunt.log.ok(component + ' postinst executed ' + executed + ' ' + grunt.util.pluralize(executed, 'action/actions') + ' successfully');
                         } else{
                             grunt.log.warn('No actions executed for ' + component);
                         }
+                        cb(null, executed);
                     }
                 });
             };
         });
         
         //then run all series in parrallel
-        grunt.util.async.parallel(series, function(err){
+        grunt.util.async.parallel(series, function parallelDone(err, result){
             if(err){
                 grunt.fail.warn(err);
             } else {
-                grunt.log.ok('bower posinst finished');
+                var totalActions = _.reduce(result, function reduceSum(sum, item){
+                    return sum + item;
+                });
+                grunt.log.debug(totalActions + ' ' + grunt.util.pluralize(totalActions, 'action/actions') + ' executed');
+                
+                grunt.log.ok('bower posinst finished executing');
             }
             done(true);
         });
