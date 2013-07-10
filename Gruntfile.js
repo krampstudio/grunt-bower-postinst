@@ -12,7 +12,7 @@ module.exports = function(grunt) {
 
     grunt.initConfig({
         jshint: {
-            all: ['Gruntfile.js', 'tasks/*.js', '<%= nodeunit.tests %>', ],
+            all: ['Gruntfile.js', 'tasks/*.js', '<%= nodeunit.tests %>'],
             options: {
                 jshintrc: '.jshintrc',
             }
@@ -29,7 +29,7 @@ module.exports = function(grunt) {
                 options: {
                     components: {
                         'jquery.ui': ['npm', {'grunt': 'build'}],
-                        'bootstrap': ['npm', {'make': [] }]
+                        'bootstrap': ['npm', {'make': 'boostrap' }]
                     }
                 }
             }

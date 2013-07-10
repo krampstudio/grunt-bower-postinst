@@ -1,48 +1,92 @@
-'use strict';
+/**
+ * @fileoverview NodeUnit test 
+ * @copyright Bertrand Chevrier 2012
+ * @author Bertrand Chevrier <chevrier.bertrand@gmail.com>
+ * @license MIT
+ * 
+ * @module test/bower_postinst_test
+ */
 
-var grunt = require('grunt');
+var fs = require('fs');
 
-/*
-  ======== A Handy Little Nodeunit Reference ========
-  https://github.com/caolan/nodeunit
+/**
+ * This function enables you to extract 
+ * the declared arguments from a function.
+ * @param {Function} fn - the function to extract the arguments for
+ * @returns {Array} the list of arguments
+ * @throw {Error} in case of wrong argument given
+ */
+var extractArgs = function(fn){
+    'use strict';
 
-  Test methods:
-    test.expect(numAssertions)
-    test.done()
-  Test assertions:
-    test.ok(value, [message])
-    test.equal(actual, expected, [message])
-    test.notEqual(actual, expected, [message])
-    test.deepEqual(actual, expected, [message])
-    test.notDeepEqual(actual, expected, [message])
-    test.strictEqual(actual, expected, [message])
-    test.notStrictEqual(actual, expected, [message])
-    test.throws(block, [error], [message])
-    test.doesNotThrow(block, [error], [message])
-    test.ifError(value)
-*/
+	if(typeof fn !== 'function'){
+		throw new Error('TypeError : The extractArgs function requires the fn argument to be a function!');
+	}
+	return fn.toString ().match (/function\s+\w*\s*\((.*?)\)/)[1].split (/\s*,\s*/);
+};
 
-exports.bower_postinst = {
-  setUp: function(done) {
-    // setup here if necessary
-    done();
-  },
-  default_options: function(test) {
-    test.expect(1);
+/**
+ * NodeUnit group of test that check the result once the task has been launched
+ * 
+ * @see https://github.com/caolan/nodeunit/
+ * 
+ * @class BowerPostInstTaskTest
+ */
+module.exports = {
+    
+    /**
+	 * @memberOf BowerPostInstTaskTest
+	 * @param {Function} done - to call once the setup is done.
+	 */
+	setUp: function(done) {
+		'use strict';
 
-    var actual = grunt.file.read('tmp/default_options');
-    var expected = grunt.file.read('test/expected/default_options');
-    test.equal(actual, expected, 'should describe what the default behavior is.');
+        this.bptask = require('../tasks/bower_postinst');
+		this.expected = {
+            'components/bootstrap' : ['node_modules/.bin/uglifyjs', 'boostrap/js/bootstrap.min.js', 'boostrap/css/bootstrap.min.css'],
+            'components/jquery.ui' : ['node_modules/grunt/bin/grunt', 'dist/jquery-ui.min.js', 'dist/jquery-ui.min.css']
+		};
+		done();
+	},
+    
+    /**
+     * Check the task is loaded and complies with the grunt requirements.
+	 * @memberOf BowerPostInstTaskTest
+	 * @param {Object} test - the node unit test context
+	 */
+	'taskCheck' : function(test){
+		'use strict';	
+	
+		test.notStrictEqual(this.bptask, undefined, 'the task should be set up');
+		test.equal(typeof this.bptask, 'function', 'the task must be a function');	
+		
+		var taskArgs = extractArgs(this.bptask);
+		test.ok(taskArgs.length > 0 && taskArgs[0] === 'grunt', 'the task must declare the grunt context as 1st parameter');
+		
+		test.done();
+	}, 
+    
+	/**
+	 * @memberOf BowerPostInstTaskTest
+	 * @param {Object} test - the node unit test context
+	 */
+	'bowerCheck' : function(test){
+		'use strict';	
+        var self = this,
+            components = Object.keys(this.expected),
+            length = components.length;
+        
+        test.expect(length);
 
-    test.done();
-  },
-  custom_options: function(test) {
-    test.expect(1);
+        components.forEach(function(componentDir){
+            fs.exists(componentDir, function(result){
+                test.ok(result === true, 'The component destination ' + componentDir + ' must have been created');
+                console.log(length);
+                if(--length <= 0){
+                    test.done();
+                }
+            });
+        });
+	}
 
-    var actual = grunt.file.read('tmp/custom_options');
-    var expected = grunt.file.read('test/expected/custom_options');
-    test.equal(actual, expected, 'should describe what the custom option(s) behavior is.');
-
-    test.done();
-  },
 };
