@@ -33,7 +33,8 @@
     "grunt-contrib-clean": "~0.4.0",
     "grunt-contrib-nodeunit": "~0.1.2",
     "grunt": "~0.4.1",
-    "grunt-bower-task": "~0.2.3"
+    "grunt-bower-task": "~0.2.3",
+    "bower" : "latest"
   },
   "peerDependencies": {
     "grunt": "~0.4.1"
