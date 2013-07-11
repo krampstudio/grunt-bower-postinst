@@ -2,7 +2,7 @@
 
 > Execute post install action on bower components
 
-Some bower components needs additionnal actions once bower has retrieved the source from the repository. This plugin helps you to automate theses tasks in order to provides you the last step to your client-side dependency manager. 
+Some bower components needs additionnal actions once [Bower][bower] has retrieved the source from the repository. This plugin helps you to automate theses tasks in order to provide you the last step to your client-side dependency manager. 
 
 ## Getting Started
 This plugin requires Grunt `~0.4.1`
@@ -45,7 +45,7 @@ grunt.initConfig({
 Type: `String`
 Default value: `bower.config.directory`
 
-The directory where the bower components are installed. Wethen the series of command full use by default the current bower configuration.
+The directory where the bower components are installed. We use by default the current bower configuration.
 
 #### options.actions
 Type: `String`
@@ -60,7 +60,7 @@ Default value:
 }
 ```
 
-This options define the default behavior for some commands. 
+This options define the default behavior for the predefined commands. 
 
 
 #### options.components
@@ -71,19 +71,20 @@ Default value: `none`
 Type: `Array`
 Default value: `none`
 
-An array of commands to be executed against the component. The values of the array can be either 
+An array of commands to be executed against the component. The values of the array can be either :
  - a string that match a predefined command (`'npm'` stands for `npm install` as in `options.actions`).
  - an object with the key as a  predefined command and the value the additionnals arguments
 
 ### Execution
 
-The commands for a component are executed in series, in the order defined in the options.
-If there is more than one components then the staks of commands are executed in parrallel by compoenents.
+The commands for a component are executed in series, in the order defined in `options.components.compoenent`.
+
+If there is more than one component then the staks of commands are executed in parrallel by component.
 
 ### Usage Example
 
 #### Bower 
-In this example, the project needs the following Bower components: `jquery`, `jquery.ui` and `bootstrap`. The components `jquery.ui` and `bootstrap` need extra commands to get an aggregated and minimified version of the scripts and stylesheet. 
+In this example, the project needs the following [Bower][bower] components: `jquery`, `jquery.ui` and `bootstrap`. The components `jquery.ui` and `bootstrap` need extra commands to get an aggregated and minimified version of the scripts and stylesheet. 
 We use the task `bower` from `grunt-bower-task` to perform the install of the components, then the `bower_postinst` task from the current plugin to run the required commands.
 
 ```js
@@ -114,6 +115,29 @@ grunt.initConfig({
     grunt.registerTask('install', ['clean', 'bower', 'bower_postinst']);
 ```
 
+These example will execute:
+```bash
+bower install
+
+#stack 1 in parallel with stack2
+cd components/bootstrap
+npm install
+make bootstrap
+
+#stack2
+cd components/jquery.ui
+npm install
+grunt build
+```
+
+## Issues
+
+To help you to resolve your issues, please provide:
+ - the versions of node.js, grunt and grunt-bower-postinst
+ - the content of your Gruntfile.js
+ - the result of the grunt command with the debug option (`grunt task --debug`) (in a [gist](https://gist.github.com/))
+ - A pull request, if you think something is wrong.
+ 
 
 ## Contributing
 
@@ -122,3 +146,6 @@ In lieu of a formal styleguide, take care to maintain the existing coding style.
 ## Release History
 
 * _0.1.0_ First release
+
+
+[bower]: https://bower.io
