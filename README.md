@@ -1,4 +1,4 @@
-# grunt-bower-postinst [![Build Status](https://travis-ci.org/krampstudio/grunt-bower-postinst.png?branch=master)](https://travis-ci.org/krampstudio/grunt-bower-postinst)]
+# grunt-bower-postinst [![Build Status](https://travis-ci.org/krampstudio/grunt-bower-postinst.png?branch=master)](https://travis-ci.org/krampstudio/grunt-bower-postinst)
 
 > Execute post install action on bower components
 
