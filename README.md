@@ -125,7 +125,7 @@ bower install
 cd components/bootstrap
 npm install
 make bootstrap
-
+ 
 #stack2
 cd components/jquery.ui
 npm install
@@ -148,6 +148,7 @@ In lieu of a formal styleguide, take care to maintain the existing coding style.
 ## Release History
 
 * _0.1.0_ First release
+* _0.2.0_ Improve jake support and simplify no args action
 
 
 [bower]: https://bower.io
