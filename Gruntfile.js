@@ -29,7 +29,8 @@ module.exports = function(grunt) {
                 options: {
                     components: {
                         'jquery.ui': ['npm', {'grunt': 'build'}],
-                        'bootstrap': ['npm', {'make': 'bootstrap' }]
+                        'bootstrap': ['npm', {'make': 'bootstrap' }],
+                        'leaflet':   ['npm', {'jake' : ''}]
                     }
                 }
             }

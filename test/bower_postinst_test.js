@@ -44,8 +44,9 @@ module.exports = {
         this.bptask = require('../tasks/bower_postinst');
 		this.expected = {
             'components/bootstrap' : ['node_modules/.bin/uglifyjs', 'boostrap/js/bootstrap.min.js', 'boostrap/css/bootstrap.min.css'],
-            'components/jquery.ui' : ['node_modules/grunt/bin/grunt', 'dist/jquery-ui.min.js', 'dist/jquery-ui.min.css']
-		};
+            'components/jquery.ui' : ['node_modules/grunt/bin/grunt', 'dist/jquery-ui.min.js', 'dist/jquery-ui.min.css'],
+            'components/leaflet' :  ['node_modules/jake', 'dist/leaflet.js']
+        };
 		done();
 	},
     
@@ -81,7 +82,6 @@ module.exports = {
         components.forEach(function(componentDir){
             fs.exists(componentDir, function(result){
                 test.ok(result === true, 'The component destination ' + componentDir + ' must have been created');
-                console.log(length);
                 if(--length <= 0){
                     test.done();
                 }
