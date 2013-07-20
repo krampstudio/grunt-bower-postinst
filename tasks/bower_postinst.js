@@ -80,7 +80,7 @@ module.exports = function(grunt) {
                 //build the postinst commands stack to run, merging the user defined and the default actions
                 actions.forEach(function itActions(action){
                     if(_.isString(action) && _.isArray(options.actions[action])){
-                        action = _.object([action], options.actions[action]);
+                        action = _.object([action], [options.actions[action]]);
                     }
                     if(_.isPlainObject(action)){
                         Object.keys(action).forEach(function itActionName(key){
