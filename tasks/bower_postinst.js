@@ -69,7 +69,7 @@ module.exports = function(grunt) {
                 var detect = {
                     'git submodule'     : grunt.file.exists(compDir + "/.gitmodules"),
                     'npm'               : grunt.file.exists(compDir + "/package.json"),
-                    'grunt'             : grunt.file.exists(compDir + "/Gruntfile.js"),
+                    'grunt'             : grunt.file.findup('Gruntfile.{js,coffee}', {nocase: true}),
                     'jake'              : grunt.file.exists(compDir + "/Jakefile") || grunt.file.exists(compDir + "/Jakefile.js"),
                     'make'              : grunt.file.exists(compDir + "/Makefile")
                 };
