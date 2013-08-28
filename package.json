@@ -1,7 +1,7 @@
 {
   "name": "grunt-bower-postinst",
   "description": "Execute post install action on bower components",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "homepage": "https://github.com/krampstudio/grunt-bower-postinst",
   "author": {
     "name": "Bertrand Chevrier",

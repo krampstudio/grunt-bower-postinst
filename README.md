@@ -149,6 +149,7 @@ In lieu of a formal styleguide, take care to maintain the existing coding style.
 
 * _0.1.0_ First release
 * _0.2.0_ Improve jake support and simplify no args action
+  * _0.2.1_ minor fixes
 
 
 [bower]: https://bower.io
