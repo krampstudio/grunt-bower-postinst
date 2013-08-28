@@ -161,7 +161,7 @@ module.exports = function(grunt) {
                 });
                 grunt.log.debug(totalActions + ' ' + grunt.util.pluralize(totalActions, 'action/actions') + ' executed');
                 
-                grunt.log.ok('bower posinst finished executing');
+                grunt.log.ok('bower postinst finished executing');
             }
             done(true);
         });
