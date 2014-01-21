@@ -1,4 +1,6 @@
-# grunt-bower-postinst [![Build Status](https://travis-ci.org/krampstudio/grunt-bower-postinst.png?branch=master)](https://travis-ci.org/krampstudio/grunt-bower-postinst)
+# grunt-bower-postinst [![Build Status](https://travis-ci.org/krampstudio/grunt-bower-postinst.png?branch=master)](https://travis-ci.org/krampstudio/grunt-bower-postinst) [![NPM version](https://badge.fury.io/js/ggrunt-bower-postinst.png)](http://badge.fury.io/js/grunt-bower-postinst)
+
+[![Npm Downloads](https://nodei.co/npm/grunt-bower-postinst.png?downloads=true&stars=true)](https://nodei.co/npm/grunt-bower-postinst.png?downloads=true&stars=true)
 
 > Execute post install action on bower components
 
