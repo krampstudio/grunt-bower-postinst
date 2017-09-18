@@ -13,12 +13,12 @@ module.exports = function(grunt) {
     grunt.registerMultiTask('bower_postinst', 'Post Installation Tasks for Bower Components.', function bowerPostInstTask () {
         
         var bower = require('bower');
+        var _ = require('lodash');
         var spawn = require('child_process').spawn;
         var util = require('util');
         var isWin = process.platform === 'win32';
         var task = grunt.task.current;
         var done = task.async();
-        var _ = grunt.util._;
         var stacks = {}; 
         
         var options = task.options({
@@ -80,7 +80,7 @@ module.exports = function(grunt) {
                 //build the postinst commands stack to run, merging the user defined and the default actions
                 actions.forEach(function itActions(action){
                     if(_.isString(action) && _.isArray(options.actions[action])){
-                        action = _.object([action], [options.actions[action]]);
+                        action = _.zipObject([action], [options.actions[action]]);
                     }
                     if(_.isPlainObject(action)){
                         Object.keys(action).forEach(function itActionName(key){
