@@ -45,7 +45,7 @@ module.exports = {
 		this.expected = {
             'components/bootstrap' : ['node_modules/.bin/uglifyjs', 'boostrap/js/bootstrap.min.js', 'boostrap/css/bootstrap.min.css'],
             'components/jquery.ui' : ['node_modules/grunt/bin/grunt', 'dist/jquery-ui.min.js', 'dist/jquery-ui.min.css'],
-            'components/leaflet' :  ['node_modules/jake', 'dist/leaflet.js']
+            'components/uritemplate' :  ['node_modules/jake', 'bin/uritemplate.js', 'bin/uritemplate-min.js']
         };
 		done();
 	},
